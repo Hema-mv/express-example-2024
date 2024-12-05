@@ -3,6 +3,8 @@
 const express = require('express');
 // create your application
 const app = express();
+const db=require('./db/conn');
+const Fruit=require('./models/fruits');
 // Import the body-parser package
 // This package contains middleware that can handle 
 // the parsing of many different types of data,
@@ -14,10 +16,11 @@ const jsxViewEngine = require('jsx-view-engine');
 // method-override is used to be able to do more than GET and POST
 const methodOverride = require('method-override');
 // you have to have a port defined so that the application has somewhere to listen
-const PORT = 3000;
+const PORT = process.env.PORT||5050;;
 
 // import the data from the fake database files
 const fruits = require('./data/fruits');
+
 
 // set up the view engine to be able to use it
 app.set('view engine', 'jsx');
@@ -115,7 +118,6 @@ app.get('/params/:p1/explanations', (req, res) => {
     res.send(
         `<h1>This is where I explain ${req.params.p1} </h1> `
     )
-
 })
 
 app.get('/params/:p1/:p2', (req, res) => {
@@ -136,7 +138,23 @@ app.get('/demo', (req, res) => {
 })
 
 // ***** ABOVE HERE are NON-API routes
-
+app.get('/api/fruits/seed',async(req,res)=>{
+    try{
+        await Fruit.create([
+       {name:'grapefruit',
+       color:'pink',
+       readyToEat:true },
+       { "name": "apple", "color": "red", "readyToEat": true }, 
+       { "name": "banana", "color": "yellow", "readyToEat": true }, { "name": "orange", "color": "orange", "readyToEat": true },
+       { "name": "kiwi", "color": "brown", "readyToEat": false }, { "name": "blueberry", "color": "blue", "readyToEat": true },
+       { "name": "mango", "color": "orange", "readyToEat": true }, { "name": "pineapple", "color": "yellow", "readyToEat": false },
+       { "name": "pear", "color": "green", "readyToEat": true }, { "name": "plum", "color": "purple", "readyToEat": true }
+    ])
+    res.status(200).redirect('/api/fruits');
+    }catch (err) {
+        res.status(400).send(err);
+      }
+})
 // ***** BELOW is what you would typically see in an API with a clear split 
 // *****        between frontend and backend
 // INDEX
